@@ -1,3 +1,3 @@
 # Quant Trading System
 
-This project is a quantitative trading system designed to handle data, strategies, portfolio management, execution, backtesting, and risk management.
+本项目是一个从零开始手搓的量化交易系统，旨在处理数据、策略、投资组合管理、执行、回测以及风险管理。
