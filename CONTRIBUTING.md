@@ -9,7 +9,6 @@
 ## 目录
 - Quick Start（3 分钟上手）
 - 项目分支与命名规范
-- Commit 规范
 - Pull Request 规范
 - Code 规范
 - 在 GitHub Desktop 的具体操作
@@ -39,16 +38,6 @@
   - 文档：`docs/update-readme`
   - 重构：`refactor/module-name`
 - 不要使用长期与上游同名的分支（例如直接编辑 `branches`），以免混淆。
-
----
-
-## 提交（commit）规范
-- 使用简明的短标题（第一行不超过 72 字符），风格可选但统一。例如：
-  - feature: add login endpoint
-  - fix: prevent null pointer in parser
-  - docs: update contributing guide
-- 描述正文（必要时）说明为什么要做该改动以及如何测试。
-- 将多个独立改动拆成多个 commit。
 
 ---
 
