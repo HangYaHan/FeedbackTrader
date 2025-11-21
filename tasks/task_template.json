@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "symbols": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "记录标的名称"
+        },
+        "data_source": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "description": "数据源标识（akshare/yfinance/csv/...）"
+                },
+                "interval": {
+                    "type": "string",
+                    "description": "时间粒度（例如 1d/1h/1m）"
+                },
+                "adjusted": {
+                    "type": "boolean",
+                    "description": "是否使用复权数据"
+                }
+            },
+            "required": [
+                "source"
+            ]
+        },
+        "date_range": {
+            "type": "object",
+            "properties": {
+                "start": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "end": {
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            "required": [
+                "start",
+                "end"
+            ]
+        },
+        "cash": {
+            "type": "number",
+            "description": "初始资金",
+            "default": 100000
+        },
+        "strategies": {
+            "type": "array",
+            "description": "策略清单，按加载顺序调用",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "可 import 的模块路径（如 strategy.my_strategy）"
+                    },
+                    "params_list": {
+                        "type": "object",
+                        "description": "传递给策略构造函数的参数"
+                    }
+                },
+                "required": [
+                    "name",
+                    "path",
+                    "params_list"
+                ]
+            }
+        }
+    },
+    "required": [
+        "id",
+        "name",
+        "desription",
+        "symbols",
+        "data_source",
+        "date_range",
+        "cash",
+        "strategies"
+    ]
+}

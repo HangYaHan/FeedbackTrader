@@ -2,3 +2,7 @@ Git/Github学习材料：通过网盘分享的文件：【技术爬爬虾】小�
 链接: https://pan.baidu.com/s/1nBpAzUq9hrFtW5Nk-RLWXQ?pwd=xd4a 提取码: xd4a
 
 快速入门量化：https://www.runoob.com/python-qt/qt-tutorial.html
+
+json文件入门：https://www.runoob.com/json/json-tutorial.html
+
+json编辑器：https://www.jyshare.com/front-end/53/

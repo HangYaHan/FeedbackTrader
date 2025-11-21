@@ -1,0 +1,30 @@
+{
+    "id": "t1",
+    "name": "demo_ma_cross",
+    "description": "简单均线交叉回测示例（演示用）",
+    "symbols": [
+        "AAPL",
+        "MSFT"
+    ],
+    "data_source": {
+        "source": "yfinance",
+        "interval": "1d",
+        "adjusted": true
+    },
+    "date_range": {
+        "start": "2020-01-01",
+        "end": "2020-12-31"
+    },
+    "cash": 100000,
+    "strategies": [
+        {
+            "name": "ma_cross",
+            "path": "strategy.ma",
+            "params_list": {
+                "short": 20,
+                "long": 50,
+                "order_size": 100
+            }
+        }
+    ]
+}

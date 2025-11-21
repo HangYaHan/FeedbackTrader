@@ -3,17 +3,21 @@
 Last Updated: 2025-11-20
 
 ---
-## 1. Introduction
-FeedbackTrader is a modular backtesting and (future) live-trading research platform. It emphasizes:
-- Clear separation of concerns (data acquisition, storage, portfolio/strategy, execution, reporting)
-- Pluggable data adapters (yfinance, akshare, CSV, future broker APIs)
-- Deterministic, inspectable backtest flows (daily snapshots + transaction history)
-- Progressive roadmap toward an event-driven architecture, risk management, and live execution.
 
-Target audience: quantitative strategy developers and system builders who value maintainability and extensibility.
+## 1. Introduction
+
+FeedbackTrader 是一个模块化的回测及（未来）实盘交易研究平台。它强调：
+- 清晰的职责分离（数据获取、存储、组合/策略、执行、报告）
+- 可插拔的数据适配器（yfinance、akshare、CSV、未来的经纪商 API）
+- 确定性的、可检查的回测流程（每日快照 + 交易历史）
+- 逐步演进至事件驱动架构、风险管理和实盘执行的路线图。
 
 ---
-## 2. High-Level Architecture
+
+## 2. Quick Start
+
+
+## 3. High-Level Architecture
 
 ```
 CLI / Backtest Command
@@ -35,10 +39,10 @@ cache hit     | adapter.fetch
     v         v
  +------+   +-----------------------------+
  |Cache |   | Adapter: yfinance/akshare...|
- |(parquet)| | - fetch(symbol,start,end)  |
+ |      |   |  - fetch(symbol,start,end)  |
  +------+   +-----------------------------+
       \         /
-	v      v
+	   v       v
 +--------------------+
 | Local Storage      | <-- normalized persistence (parquet)
 +--------------------+
@@ -71,13 +75,76 @@ cache hit     | adapter.fetch
 +--------------------+
 ```
 
-Responsibilities (from `blockdesign.md` refined):
-- Backtest Driver: orchestrates daily loop, triggers reporting.
-- Fetcher: unified API `get_history`, mediates cache + adapter selection, handles retries.
-- Adapter: source-specific data acquisition & minimal normalization.
-- Storage: efficient local parquet cache.
-- VirtualManager: multi-strategy portfolio simulation, transaction + snapshot recording.
-- Visualization/Report: post-run analytics (KPIs, charts). (Future)
+---
+
+## Layers
+
+### Overview
+
+Layer 1: Data Layer
+- 主要负责数据获取与存储，包含 Fetcher、Adapters 及 Local Storage 模块。
+
+Layer 2: Portfolio & Strategy Layer
+- 管理虚拟基金组合与策略执行，包含 VirtualManager 及 Strategy 模块。 
+
+Layer 3: Execution & Backtest Driver
+- 驱动回测流程，协调各层交互，包含 Backtest Engine / CLI 模块。
+
+Layer 4: Risk Management (Planned)
+- 未来计划添加的风险管理模块，用于监控和控制交易风险。
+
+Layer 5: Monitoring and Maintenance Layer
+- 未来计划添加的监控与维护模块，用于系统健康检查与日志记录。
+
+### Layer 1: Data Layer
+
+### Layer 2: Portfolio & Strategy Layer
+
+### Layer 3: Execution & Backtest Driver
+
+### Layer 4: Risk Management (Planned)
+
+### Layer 5: Monitoring and Maintenance Layer
+
+## Dataflow
+
+task file (write in .json style)
+
+```
+{
+	sym
+}
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 ## 3. Data Layer
