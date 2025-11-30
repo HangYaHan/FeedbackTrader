@@ -10,11 +10,20 @@ logger = get_logger(__name__)
 
 HELP_TEXT = """FeedbackTrader interactive CLI
 Commands:
-  help, h, ?       Show this help
-  config, cfg      Show or set configuration
-  backtest, bt     Run a backtest
-  exit, quit, q    Exit the CLI
-  (other commands are not implemented yet)
+    help, h, ?       Show this help
+    config, cfg      Show or set configuration
+    backtest, bt     Run a backtest
+    plot             Plot cached OHLC data
+    exit, quit, q    Exit the CLI
+
+Plot usage:
+    plot SYMBOL [-start YYYYMMDD] [-end YYYYMMDD]
+             [-frame daily|weekly] [-source akshare|yfinance|csv]
+             [-refresh] [-output path.png] [-ma 5,20]
+
+Examples:
+    plot sh600000 -start 20240101 -end 20241130 -source akshare
+    plot AAPL -start 2024-01-01 -frame weekly -output aapl_weekly.png -ma 5,20
 """
 
 def print_help() -> None:
@@ -71,6 +80,12 @@ def interactive_loop() -> int:
             logger.info("User entered secret command 'axhxt'")
             print("You found the top secret command! -- amhxr")
             continue
+
+        if cmd == "plot":
+            from src.ploter.ploter import run_plot_command
+            run_plot_command(args)
+            continue
+
         print(f"Unknown command: {cmd_line}. Type 'help' for available commands.")
 
 def main(argv: list[str] | None = None) -> int:
