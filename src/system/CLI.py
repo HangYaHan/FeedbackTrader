@@ -4,7 +4,6 @@ import sys
 from typing import NoReturn
 
 from .log import get_logger
-from src.backtest.engine import BacktestEngine
 
 logger = get_logger(__name__)
 
@@ -16,14 +15,10 @@ Commands:
     plot             Plot cached OHLC data
     exit, quit, q    Exit the CLI
 
-Plot usage:
-    plot SYMBOL [-start YYYYMMDD] [-end YYYYMMDD]
-             [-frame daily|weekly] [-source akshare|yfinance|csv]
-             [-refresh] [-output path.png] [-ma 5,20]
+For detailed all command usage, see docs/COMMANDS.md
 
-Examples:
-    plot sh600000 -start 20240101 -end 20241130 -source akshare
-    plot AAPL -start 2024-01-01 -frame weekly -output aapl_weekly.png -ma 5,20
+If you just want to see something quick, try:
+    plot sh600000 --frame weekly
 """
 
 def print_help() -> None:
@@ -60,10 +55,17 @@ def interactive_loop() -> int:
             return 0
         
         if cmd in ("backtest", "bt"):
-            logger.info("User requested backtest command (not implemented)")
-            print("Backtest command is not implemented yet.")
-            backtest_engine = BacktestEngine()
-            backtest_engine.run_backtest()
+            from src.backtest.engine import run_task
+            if not args:
+                print("Usage: backtest TASK_NAME (without .json, from tasks folder)")
+                continue
+            task_name = args[0]
+            try:
+                curve = run_task(task_name)
+                print(f"Backtest done. Final equity: {curve.iloc[-1,0]:.2f}")
+            except Exception as e:
+                logger.exception("Backtest failed: %s", e)
+                print(f"Backtest failed: {e}")
             continue
 
         if cmd in ("config", "cfg"):
@@ -86,10 +88,6 @@ def interactive_loop() -> int:
             run_plot_command(args)
             continue
 
-        if cmd == "plot":
-            from src.ploter.ploter import run_plot_command
-            run_plot_command(args)
-            continue
 
         print(f"Unknown command: {cmd_line}. Type 'help' for available commands.")
 

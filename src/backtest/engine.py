@@ -1,45 +1,72 @@
-"""
-Backtest 引擎接口：
-- run_backtest(strategy, data, portfolio, start, end, config)
-- 支持回测结果导出（绩效、逐笔记录）
-"""
-from typing import Any, Dict, Optional
+"""Backtest engine that loads task JSON and runs the specified strategy."""
 
+from __future__ import annotations
+
+import importlib
+import json
+from pathlib import Path
+from typing import Any, Dict
+
+import pandas as pd
+
+from src.data import fetcher
+from src.portfolio.manager import run_backtest
 from src.system.log import get_logger
 
 logger = get_logger(__name__)
 
-class BacktestEngine:
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
-        """Initialize the backtest engine.
 
-        Make `config` optional so callers that haven't wired config yet
-        (e.g. a CLI placeholder) won't get a TypeError. This is a thin
-        stub; real implementations should require and validate config.
-        """
-        if config is None:
-            logger.info("Initializing BacktestEngine without config (stub)")
-        else:
-            logger.info("Initializing BacktestEngine with config (Not Implemented)")
-        self.config = config
+def load_task(task_name: str) -> Dict[str, Any]:
+	task_path = Path(__file__).resolve().parents[2] / 'tasks' / f'{task_name}.json'
+	if not task_path.exists():
+		raise FileNotFoundError(f"Task file not found: {task_path}")
+	with task_path.open('r', encoding='utf-8') as f:
+		return json.load(f)
 
-    def run_backtest(self, strategy: Any = None, data_source: Any = None, portfolio: Any = None, start=None, end=None) -> Dict[str, Any]:
-        """Run a backtest.
 
-        Parameters are optional in this stub so callers can invoke the
-        method during interactive development without wiring full
-        arguments. The function logs the call and returns an empty result
-        placeholder. Replace with full implementation later.
-        """
-        logger.info("Running backtest (stub). strategy=%s, data_source=%s, portfolio=%s, start=%s, end=%s",
-                    type(strategy).__name__ if strategy is not None else None,
-                    type(data_source).__name__ if data_source is not None else None,
-                    type(portfolio).__name__ if portfolio is not None else None,
-                    start, end)
-        # Return a placeholder result structure to avoid callers getting None
-        return {
-            "status": "not_implemented",
-            "equity_curve": [],
-            "trades": [],
-            "metrics": {},
-        }
+def load_strategy(module_path: str, class_name: str, params: Dict[str, Any]):
+	module = importlib.import_module(module_path)
+	cls = getattr(module, class_name)
+	return cls(**params)
+
+
+def run_task(task_name: str):
+	task = load_task(task_name)
+	logger.info("Loaded task %s", task_name)
+
+	strat_cfg = task['strategy']
+	port_cfg = task['portfolio']
+	data_cfg = task['data']
+
+	strategy = load_strategy(strat_cfg['module'], strat_cfg['class'], strat_cfg['params'])
+	logger.info("Strategy instantiated: %s.%s params=%s", strat_cfg['module'], strat_cfg['class'], strat_cfg['params'])
+
+	df = fetcher.get_history(
+		symbol=data_cfg['symbol'],
+		start=data_cfg.get('start', port_cfg.get('start')),
+		end=data_cfg.get('end', port_cfg.get('end')),
+		source=data_cfg.get('source', 'akshare'),
+		interval=data_cfg.get('interval', '1d'),
+		cache=data_cfg.get('cache', True),
+		refresh=data_cfg.get('refresh', False),
+	)
+	logger.info("Data fetched: symbol=%s rows=%s start=%s end=%s", data_cfg['symbol'], len(df), df.index.min(), df.index.max())
+
+	# ensure Close exists
+	if 'Close' not in df.columns:
+		# try to infer from common names
+		if 'close' in df.columns:
+			df = df.rename(columns={'close': 'Close'})
+		else:
+			raise ValueError('DataFrame must contain Close column')
+
+	commission = port_cfg.get('commission', 0.0)
+	slippage = port_cfg.get('slippage', 0.0)
+
+	logger.info("Running backtest: commission=%.4f slippage=%.4f", commission, slippage)
+	equity_curve = run_backtest(strategy, df, commission=commission, slippage=slippage)
+	logger.info("Backtest finished: start=%s end=%s final_equity=%.2f", df.index.min(), df.index.max(), equity_curve.iloc[-1,0])
+	return equity_curve
+
+
+__all__ = ["run_task"]
