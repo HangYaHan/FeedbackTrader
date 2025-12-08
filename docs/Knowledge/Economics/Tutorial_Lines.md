@@ -56,21 +56,21 @@
 
 ## 函数摘要（速览）
 
-| 函数 | 作用 | 备注 |
-| --- | --- | --- |
-| `CLOSE/OPEN/HIGH/LOW/VOLUME` | 提取常用行情列 | 自动匹配列名 |
-| `LAG` | 序列后移 | 前值引用 |
-| `DIFF` | 差分 | 涨跌/动量 |
-| `ROLLING_MAX/MIN` | 窗口高低 | 近 N 日高低 |
-| `STD` | 滚动标准差 | 波动度 |
-| `ZSCORE` | 滚动标准分 | 偏离度量 |
-| `MA/EMA` | 移动平均 | 趋势平滑 |
-| `RSI` | 强弱指标 | 0-100 振荡 |
-| `MACD` | 趋势动量 | macd/signal/hist |
-| `BOLL` | 布林带 | 均值±k*std |
-| `ATR` | 平均真实波幅 | 波动指标 |
-| `RESAMPLE_OHLC` | K 线重采样 | OHLC(V) 聚合 |
-| `RESAMPLE` | 序列重采样 | last/first/mean |
+| 函数                         | 作用           | 备注             |
+| ---------------------------- | -------------- | ---------------- |
+| `CLOSE/OPEN/HIGH/LOW/VOLUME` | 提取常用行情列 | 自动匹配列名     |
+| `LAG`                        | 序列后移       | 前值引用         |
+| `DIFF`                       | 差分           | 涨跌/动量        |
+| `ROLLING_MAX/MIN`            | 窗口高低       | 近 N 日高低      |
+| `STD`                        | 滚动标准差     | 波动度           |
+| `ZSCORE`                     | 滚动标准分     | 偏离度量         |
+| `MA/EMA`                     | 移动平均       | 趋势平滑         |
+| `RSI`                        | 强弱指标       | 0-100 振荡       |
+| `MACD`                       | 趋势动量       | macd/signal/hist |
+| `BOLL`                       | 布林带         | 均值±k*std       |
+| `ATR`                        | 平均真实波幅   | 波动指标         |
+| `RESAMPLE_OHLC`              | K 线重采样     | OHLC(V) 聚合     |
+| `RESAMPLE`                   | 序列重采样     | last/first/mean  |
 
 ## 使用提示
 

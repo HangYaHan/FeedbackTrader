@@ -1,4 +1,27 @@
-这些策略你觉得能用我设计的语法来表示吗，给出示例
+# Prototype
+
+## 目录
+
+**当前DSL已支持/轻扩展即可的策略示例**
+- 均线交叉（MA/EMA）
+- 动量指标（MOM）
+- 震荡指标（RSI）
+- 简单突破与回调（HHV/LLV）
+- 成交量过滤（VOLUME）
+- 支撑阻力（HHV/LLV）
+- 市场结构（SWING HIGH/LOW）
+
+**需要扩展DSL的策略与建议示例**
+- 斐波那契与回调形态（Fibo）
+- 谐波形态
+- 波浪理论
+- 砖形图（Renko）
+- 公平价值缺口（FVG）
+- K线形态
+- 趋势线/江恩角度
+- 月相周期
+- 背离
+- 供需区块
 
 斐波那契、突破和回调形态、波浪理论、公平价值缺口、K线形态、均线、月相周期、砖形图、谐波形态、支撑阻力、趋势线、江恩角度、动量指标、震荡指标、背离、成交量、供需区块、市场结构等。
 
@@ -6,7 +29,7 @@
 - 用你当前的 DSL（module/parameter/assign/always/crossabove/crossbelow/MA/EMA/if/else/assert/buy/sell）可以直接表达：均线交叉、动量/震荡指标类、简单突破/回调、成交量过滤、基础支撑阻力触发、部分市场结构事件。
 - 需扩展内置函数或语法才能表达得更自然的：斐波那契（Fibo 价格与回撤比）、谐波形态、波浪理论、砖形图（Renko 重采样）、公平价值缺口（FVG）、K线复杂形态库、趋势线/江恩角度（几何构造与角度计算）、月相周期（天文周期映射）、背离（价-指标交叉与斜率比较）、供需区块（区域识别与触发）。
 
-**已支持/轻扩展即可的策略示例**
+**当前DSL已支持/轻扩展即可的策略示例**
 
 - 均线交叉（已支持）
   - module MovingAverageCrossover { parameter short=5; parameter long=20
@@ -68,7 +91,7 @@
     always@(CLOSE([symbol]) crossbelow ll) sell 100  // BOS 向下
   }
 
-**需要扩展的策略与建议示例**
+
 
 - 斐波那契与回调形态（需 FIBO_LEVELS/RETRACE 比例）
   - module FiboPullback {
