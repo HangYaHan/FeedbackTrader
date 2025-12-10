@@ -1,11 +1,16 @@
-"""Lightweight trigger/statement helpers for strategy DSL semantics."""
+"""Lightweight trigger/statement helpers for strategy DSL semantics.
+
+Provides a per-instance trigger container `TriggerSet` to avoid global
+state collisions when multiple strategies coexist. The legacy global API
+(always/on_bar/run_triggers) remains for backward compatibility by using
+an internal shared TriggerSet.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional, Any
 import pandas as pd
-
 
 # Type aliases
 Condition = Callable[[Any], bool]
@@ -20,6 +25,7 @@ class Trigger:
 	last_state: bool = field(default=False, init=False)
 
 	def evaluate(self, context: Any) -> None:
+		"""Execute action on rising edge of condition (false -> true)."""
 		current = False
 		try:
 			current = bool(self.condition(context))
@@ -34,26 +40,43 @@ class Trigger:
 		self.last_state = current
 
 
-_TRIGGERS: List[Trigger] = []
-_ON_BAR: List[Action] = []
+class TriggerSet:
+	"""Container to hold triggers and on-bar actions per strategy instance."""
+
+	def __init__(self) -> None:
+		self._triggers: List[Trigger] = []
+		self._on_bar: List[Action] = []
+
+	def always(self, condition: Condition, action: Action, name: Optional[str] = None) -> Trigger:
+		trig = Trigger(condition=condition, action=action, name=name)
+		self._triggers.append(trig)
+		return trig
+
+	def on_bar(self, action: Action) -> Action:
+		self._on_bar.append(action)
+		return action
+
+	def run(self, context: Any) -> None:
+		for action in list(self._on_bar):
+			action(context)
+		for trig in list(self._triggers):
+			trig.evaluate(context)
+
+
+# Backward-compatible global trigger set (optional use)
+_GLOBAL_SET = TriggerSet()
 
 
 def always(condition: Condition, action: Action, name: Optional[str] = None) -> Trigger:
-	trig = Trigger(condition=condition, action=action, name=name)
-	_TRIGGERS.append(trig)
-	return trig
+	return _GLOBAL_SET.always(condition, action, name)
 
 
 def on_bar(action: Action) -> Action:
-	_ON_BAR.append(action)
-	return action
+	return _GLOBAL_SET.on_bar(action)
 
 
 def run_triggers(context: Any) -> None:
-	for action in list(_ON_BAR):
-		action(context)
-	for trig in list(_TRIGGERS):
-		trig.evaluate(context)
+	_GLOBAL_SET.run(context)
 
 
 def assign(value: Any) -> Any:
@@ -63,19 +86,21 @@ def assign(value: Any) -> Any:
 def assert_stmt(condition: bool, message: str = "assertion failed") -> None:
 	if not condition:
 		raise AssertionError(message)
-	
+
+
 def crossabove(a: pd.Series, b: pd.Series) -> pd.Series:
-    """Edge-trigger: a crosses above b (prev <=, now >)."""
-    return (a > b) & (a.shift(1) <= b.shift(1))
+	"""Edge-trigger: a crosses above b (prev <=, now >)."""
+	return (a > b) & (a.shift(1) <= b.shift(1))
 
 
 def crossbelow(a: pd.Series, b: pd.Series) -> pd.Series:
-    """Edge-trigger: a crosses below b (prev >=, now <)."""
-    return (a < b) & (a.shift(1) >= b.shift(1))
+	"""Edge-trigger: a crosses below b (prev >=, now <)."""
+	return (a < b) & (a.shift(1) >= b.shift(1))
 
 
 __all__ = [
 	"Trigger",
+	"TriggerSet",
 	"always",
 	"on_bar",
 	"run_triggers",

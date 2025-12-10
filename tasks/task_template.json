@@ -1,9 +1,9 @@
 {
   "strategy": {
     "module": "src.strategy.yahan_strategies",
-    "class": "SMAStrategy",
+    "class": "MACDStrategy",
     "params": {
-      "symbol": "",
+      "symbol": "sh601000",
       "short_window": 5,
       "long_window": 20,
       "qty": 100
@@ -13,12 +13,12 @@
     "cash": 1000000,
     "commission": 0.0005,
     "slippage": 0.0005,
-    "start": "2020-01-01",
-    "end": "2024-12-31"
+    "start": "2024-01-01",
+    "end": "2025-12-01"
   },
   "data": {
     "source": "akshare",
-    "symbol": "",
+    "symbol": "sh601000",
     "interval": "1d",
     "cache": true,
     "refresh": false
